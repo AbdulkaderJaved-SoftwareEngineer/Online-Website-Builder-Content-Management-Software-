@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+
+<head>
+
+<link rel="stylesheet" href="https://unpkg.com/grapesjs/dist/css/grapes.min.css"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://unpkg.com/grapesjs"></script>
+<style>
+body{
+  margin:0;
+  padding : 0;
+}
+.editor-canvas{
+  overflow:scroll;
+  overflow-x:hidden;
+  -ms-overflow-style:none;
+  scrollbar-width: none;
+
+}
+::-webkit-scrollbar{
+  display:none;
+
+}
+#gjs {
+  border: 3px solid #444;
+}
+
+/* Reset some default styling */
+.gjs-cv-canvas {
+  top: 0;
+  width: 100vw;
+  height: 100%;
+}
+.gjs-block {
+  width: auto;
+  height: auto;
+  min-height: auto;
+}
+.panel__top {
+  padding: 0;
+  width: 100%;
+  display: flex;
+  position: initial;
+  justify-content: center;
+  justify-content: space-between;
+  height:20%;
+}
+.panel__basic-actions {
+  position: initial;
+}
+
+
+.editor-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  height: 100%;
+}
+
+.editor-canvas {
+  flex-grow: 2;
+}
+
+.panel__right {
+  flex-basis: 230px;
+  position: relative;
+  overflow-y: auto;
+}
+
+
+.panel__switcher {
+  position: initial;
+}
+
+#gjs {
+  border: 1px solid black;
+
+}
+/* Theming */
+
+/* Primary color for the background */
+.gjs-one-bg {
+  background-color: #0336FF;
+}
+
+/* Secondary color for the text color */
+.gjs-two-color {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Tertiary color for the background */
+.gjs-three-bg {
+  background-color: #ec5896;
+  color: white;
+}
+
+/* Quaternary color for the text color */
+.gjs-four-color,
+.gjs-four-color-h:hover {
+  color: white;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</style>
+</head>
+<body>
+
+	<div class="panel__top">
+   <h1>Abdulkader</h1>
+    <div class="panel__basic-actions"></div>
+      <div class="panel__switcher"></div>
+</div>
+<div class="editor-row">
+  <div class="editor-canvas">
+
+    <div id="gjs">  </div>
+
+  </div>
+
+
+  <div class="panel__right">
+    <div class="layers-container"></div>
+       <div class="styles__container"></div>
+  </div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div id="blocks"></div>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+
+
+<h1>hello</h1>
+
+
+
+<script>
+var editor = grapesjs.init({
+  // Indicate where to init the editor. You can also pass an HTMLElement
+  container: '#gjs',
+  // Get the content for the canvas directly from the element
+  // As an alternative we could use: `components: '<h1>Hello World Component!</h1>'`,
+  fromElement: true,
+  // Size of the editor
+  height: '100vh',
+  width: 'auto',
+  // Disable the storage manager for the moment
+  storageManager: false,
+  // Avoid any default panel
+ plugins: ['grapesjs-blocks-bootstrap4'],
+        pluginsOpts: {
+            'grapesjs-blocks-bootstrap4': {
+                blocks: {},
+                blockCategories: {},
+                labels: {},
+                gridDevicesPanel: true,
+                formPredefinedActions: [
+                    {name: 'Contact', value: '/contact'},
+                    {name: 'landing', value: '/landing'},
+                ]
+            }
+        },
+        canvas: {
+            styles: [
+                'https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css'
+            ],
+            scripts: [
+                'https://code.jquery.com/jquery-3.3.1.slim.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js',
+                'https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js'
+            ],
+        },
+
+
+
+
+ storageManager: {
+      id: 'gjs-',             // Prefix identifier that will be used inside storing and loading
+      type: 'local',          // Type of the storage
+      autosave: true,         // Store data automatically
+      autoload: true,         // Autoload stored data on init
+      stepsBeforeSave: 1,     // If autosave enabled, indicates how many changes are necessary before store method is triggered
+      storeComponents: true,  // Enable/Disable storing of components in JSON format
+      storeStyles: true,      // Enable/Disable storing of rules in JSON format
+      storeHtml: true,        // Enable/Disable storing of components as HTML string
+      storeCss: true,         // Enable/Disable storing of rules as CSS string
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  deviceManager: {
+    devices: [{
+        name: 'Desktop',
+        width: '', // default size
+      }, {
+        name: 'Mobile',
+        width: '320px', // this value will be used on canvas width
+        widthMedia: '480px', // this value will be used in CSS @media
+    }]
+  },
+   
+ 
+
+
+
+
+
+
+
+  
+  blockManager: {
+    appendTo: '#blocks',
+    blocks: [
+      {
+        id: 'section', // id is mandatory
+        label: '<b>Section</b>', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-block-section' },
+        content: `<section>
+          <h1>This is a simple title</h1>
+          <div>This is just a Lorem text: Lorem ipsum dolor sit amet</div>
+        </section>`,
+      }, {
+        id: 'text',
+        label: 'Text',
+        content: '<div data-gjs-type="text">Insert your text here</div>',
+      },
+      
+       {
+        id: 'button', // id is mandatory
+        label: 'Button', // You can use HTML/SVG inside labels
+        attributes: { class:'btn btn-danger' },
+        content: `<button class="btn btn-success" data-gjs-type="button">Button</button>`,
+      },
+      
+    
+       {
+        id: 'h1', // id is mandatory
+        label: 'H1', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-h1' },
+        content: `<h1>H1</h1>`,
+      },
+        {
+        id: 'h2', // id is mandatory
+        label: 'H2', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-h2' },
+        content: `<h2>H2</h2>`,
+      },
+        {
+        id: 'h3', // id is mandatory
+        label: 'H3', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-h3' },
+        content: `<h3>H3</h3>`,
+      },
+        {
+        id: 'h4', // id is mandatory
+        label: 'H4', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-h4' },
+        content: `<h4>H4</h4>`,
+      },
+     {
+        id: 'h5', // id is mandatory
+        label: 'H5', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-h5' },
+        content: `<h5>H5</h5>`,
+      },
+        {
+        id: 'h6', // id is mandatory
+        label: 'H6', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-h6' },
+        content: `<h6>H6</h6>`,
+      },
+
+
+    {
+        id: 'p', // id is mandatory
+        label: 'Paragraph', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-Paragraph' },
+        content: `<p>This is a Paragraph</p>`,
+      },
+        {
+        id: 'strong', // id is mandatory
+        label: 'strong', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-strong' },
+        content: `<strong>This is a Strong text</strong>`,
+      },
+
+        {
+        id: 'bold', // id is mandatory
+        label: 'Bold', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-bold' },
+        content: `<b>This is a Bold Text</b>`,
+      },
+        {
+        id: 'hr', // id is mandatory
+        label: 'line-break', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-hr' },
+        content: `<hr></hr>`,
+      },
+        {
+        id: 'div', // id is mandatory
+        label: 'div', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-div' },
+        content: `<div data-gjs-type="text">This is a div tag please use it</div>`,
+      },
+        {
+        id: 'video', // id is mandatory
+        label: 'Video', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-Video' },
+        content: `<video data-gjs-type"src"></video>`,
+      },
+  {
+        id: 'audio', // id is mandatory
+        label: 'audio', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-audio' },
+        content: `<audio></audio>`,
+      },
+        {
+        id: 'progress', // id is mandatory
+        label: 'Progress', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-progress' },
+        content: `<progress value="32" max="100"></progress>`,
+      },
+        {
+        id: 'table', // id is mandatory
+        label: 'Table', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-Table' },
+        content: `<table></table>`,
+      },
+      {
+        id: 'Navbar', // id is mandatory
+        label: 'NavBar', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-navbar' },
+        content: `<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Link</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Dropdown
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+        </li>
+      </ul>
+      <form class="d-flex">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+</nav>`,
+      },
+  {
+        id: 'alert', // id is mandatory
+        label: 'Alert', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-alert' },
+        content: `<div class="alert alert-primary" role="alert">
+  A simple primary alert—check it out!
+</div>`,
+      },
+
+  {
+        id: 'accordionExample', // id is mandatory
+        label: 'Accordion', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-accordion' },
+        content: `<div class="accordion" id="accordionExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        Accordion Item #1
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingTwo">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+        Accordion Item #2
+      </button>
+    </h2>
+    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingThree">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+        Accordion Item #3
+      </button>
+    </h2>
+    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+        <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+      </div>
+    </div>
+  </div>
+</div>`,
+      },
+
+
+
+ {
+        id: 'Card', // id is mandatory
+        label: 'Card', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-card' },
+        content: `<div class="card" style="width: 18rem;">
+  <img src="..." class="card-img-top" alt="...">
+  <div class="card-body">
+    <h5 class="card-title">Card title</h5>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    <a href="#" class="btn btn-primary">Go somewhere</a>
+  </div>
+</div>`,
+      },
+
+ {
+        id: 'Card2', // id is mandatory
+        label: 'Card2', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-card2' },
+        content: `<div class="card" style="width: 18rem;">
+  <img src="..." class="card-img-top" alt="...">
+  <div class="card-body">
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  </div>
+</div>`,
+      },
+
+ {
+        id: 'GridCard', // id is mandatory
+        label: 'GridCard', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-Gridcard' },
+        content: `<div class="row">
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Special title treatment</h5>
+        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+        <a href="#" class="btn btn-primary">Go somewhere</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Special title treatment</h5>
+        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+        <a href="#" class="btn btn-primary">Go somewhere</a>
+      </div>
+    </div>
+  </div>
+</div>`,
+      },
+
+{
+        id: 'ImageCard', // id is mandatory
+        label: 'ImageCard', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-Imagecard' },
+        content: `<div class="card" style="width: 18rem;">
+  <img src="..." class="card-img-top" alt="...">
+  <div class="card-body">
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  </div>
+</div>`,
+      },
+
+
+      {
+        id: 'HorizontalCard', // id is mandatory
+        label: 'HorizontalCard', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-HorizontalCard' },
+        content: `<div class="card mb-3" style="max-width: 540px;">
+  <div class="row g-0">
+    <div class="col-md-4">
+      <img src="..." class="img-fluid rounded-start" alt="...">
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+      </div>
+    </div>
+  </div>
+</div>`,
+      },
+
+
+
+{
+        id: 'ImageCard', // id is mandatory
+        label: 'ImageCard', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-Imagecard' },
+        content: `<div class="card" style="width: 18rem;">
+  <img src="..." class="card-img-top" alt="...">
+  <div class="card-body">
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  </div>
+</div>`,
+      },
+
+
+{
+        id: 'ColouredCard', // id is mandatory
+        label: 'ColouredCard', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-ColouredCard' },
+        content: `<div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+  <div class="card-header">Header</div>
+  <div class="card-body">
+    <h5 class="card-title">Primary card title</h5>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  </div>
+</div>
+<div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+  <div class="card-header">Header</div>
+  <div class="card-body">
+    <h5 class="card-title">Secondary card title</h5>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  </div>
+</div>
+<div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+  <div class="card-header">Header</div>
+  <div class="card-body">
+    <h5 class="card-title">Success card title</h5>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  </div>
+</div>
+<div class="card text-white bg-danger mb-3" style="max-width: 18rem;">
+  <div class="card-header">Header</div>
+  <div class="card-body">
+    <h5 class="card-title">Danger card title</h5>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  </div>
+</div>
+<div class="card text-dark bg-warning mb-3" style="max-width: 18rem;">
+  <div class="card-header">Header</div>
+  <div class="card-body">
+    <h5 class="card-title">Warning card title</h5>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  </div>
+</div>
+<div class="card text-dark bg-info mb-3" style="max-width: 18rem;">
+  <div class="card-header">Header</div>
+  <div class="card-body">
+    <h5 class="card-title">Info card title</h5>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  </div>
+</div>
+<div class="card text-dark bg-light mb-3" style="max-width: 18rem;">
+  <div class="card-header">Header</div>
+  <div class="card-body">
+    <h5 class="card-title">Light card title</h5>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  </div>
+</div>
+<div class="card text-white bg-dark mb-3" style="max-width: 18rem;">
+  <div class="card-header">Header</div>
+  <div class="card-body">
+    <h5 class="card-title">Dark card title</h5>
+    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+  </div>
+</div>`,
+      },
+
+{
+        id: 'CardGroup', // id is mandatory
+        label: 'CardGroup', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-card-group' },
+        content: `<div class="card-group">
+  <div class="card">
+    <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+    </div>
+    <div class="card-footer">
+      <small class="text-muted">Last updated 3 mins ago</small>
+    </div>
+  </div>
+  <div class="card">
+    <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+    </div>
+    <div class="card-footer">
+      <small class="text-muted">Last updated 3 mins ago</small>
+    </div>
+  </div>
+  <div class="card">
+    <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">Card title</h5>
+      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
+    </div>
+    <div class="card-footer">
+      <small class="text-muted">Last updated 3 mins ago</small>
+    </div>
+  </div>
+</div>`,
+      },
+
+
+
+{
+        id: 'FourGridCards', // id is mandatory
+        label: 'FourGridCards', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-row row-cols-1 row-cols-md-2 g-4' },
+        content: `<div class="row row-cols-1 row-cols-md-2 g-4">
+  <div class="col">
+    <div class="card">
+      <img src="..." class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card">
+      <img src="..." class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card">
+      <img src="..." class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card">
+      <img src="..." class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+      </div>
+    </div>
+  </div>
+</div>`,
+      },
+
+
+
+
+
+{
+        id: '3-GridCards', // id is mandatory
+        label: '3-GridCards', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-row row-cols-1 row-cols-md-2 g-4' },
+        content: `<div class="row row-cols-1 row-cols-md-3 g-4">
+  <div class="col">
+    <div class="card h-100">
+      <img src="..." class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+      </div>
+      <div class="card-footer">
+        <small class="text-muted">Last updated 3 mins ago</small>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card h-100">
+      <img src="..." class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+      </div>
+      <div class="card-footer">
+        <small class="text-muted">Last updated 3 mins ago</small>
+      </div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card h-100">
+      <img src="..." class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
+      </div>
+      <div class="card-footer">
+        <small class="text-muted">Last updated 3 mins ago</small>
+      </div>
+    </div>
+  </div>
+</div>`,
+      },
+
+
+
+{
+        id: 'Slider', // id is mandatory
+        label: 'Slider', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-carousel slide' },
+        content: `<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="..." class="d-block w-100" alt="...">
+    </div>
+    <div class="carousel-item">
+      <img src="..." class="d-block w-100" alt="...">
+    </div>
+    <div class="carousel-item">
+      <img src="..." class="d-block w-100" alt="...">
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>`,
+      },
+
+
+{
+        id: 'lists', // id is mandatory
+        label: 'List', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-list' },
+        content: `<div class="card" style="width: 18rem;">
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">An item</li>
+    <li class="list-group-item">A second item</li>
+    <li class="list-group-item">A third item</li>
+  </ul>
+</div>`,
+      },
+{
+ id: 'Input', // id is mandatory
+        label: 'Input', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-input' },
+        content: `<div class="input-group flex-nowrap">
+  <span class="input-group-text" id="addon-wrapping">@</span>
+  <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="addon-wrapping">
+</div>`,
+      },
+
+      {
+ id: 'TextArea', // id is mandatory
+        label: 'TextArea', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-textarea' },
+        content: `<div class="form-floating">
+  <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
+  <label for="floatingTextarea2">Comments</label>
+</div>`,
+      },
+
+           {
+ id: 'Select', // id is mandatory
+        label: 'Select', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-select' },
+        content: `<div class="form-floating">
+  <select class="form-select" id="floatingSelect" aria-label="Floating label select example">
+    <option selected>Open this select menu</option>
+    <option value="1">One</option>
+    <option value="2">Two</option>
+    <option value="3">Three</option>
+  </select>
+  <label for="floatingSelect">Works with selects</label>
+</div>`,
+      },
+ {
+ id: 'ContactForm', // id is mandatory
+        label: 'ContactForm', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-ContactForm' },
+        content: `<form class="row g-3">
+  <div class="col-md-6">
+    <label for="inputEmail4" class="form-label">Email</label>
+    <input type="email" class="form-control" id="inputEmail4">
+  </div>
+  <div class="col-md-6">
+    <label for="inputPassword4" class="form-label">Password</label>
+    <input type="password" class="form-control" id="inputPassword4">
+  </div>
+  <div class="col-12">
+    <label for="inputAddress" class="form-label">Address</label>
+    <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
+  </div>
+  <div class="col-12">
+    <label for="inputAddress2" class="form-label">Address 2</label>
+    <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+  </div>
+  <div class="col-md-6">
+    <label for="inputCity" class="form-label">City</label>
+    <input type="text" class="form-control" id="inputCity">
+  </div>
+  <div class="col-md-4">
+    <label for="inputState" class="form-label">State</label>
+    <select id="inputState" class="form-select">
+      <option selected>Choose...</option>
+      <option>...</option>
+    </select>
+  </div>
+  <div class="col-md-2">
+    <label for="inputZip" class="form-label">Zip</label>
+    <input type="text" class="form-control" id="inputZip">
+  </div>
+  <div class="col-12">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="gridCheck">
+      <label class="form-check-label" for="gridCheck">
+        Check me out
+      </label>
+    </div>
+  </div>
+  <div class="col-12">
+    <button type="submit" class="btn btn-primary">Sign in</button>
+  </div>
+</form>`,
+      },
+
+
+
+      {
+        id: 'Header and Footer', // id is mandatory
+        label: 'Header and Footer', // You can use HTML/SVG inside labels
+        attributes: { class:'gjs-header&Footer' },
+        content: `<div class="card">
+  <div class="card-header">
+    Featured
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">Special title treatment</h5>
+    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+    <a href="#" class="btn btn-primary">Go somewhere</a>
+  </div>
+</div>`,
+      },
+      
+      
+             {
+        id: 'image',
+        label: 'Image',
+        // Select the component once it's dropped
+        select: true,
+        // You can pass components as a JSON instead of a simple HTML string,
+        // in this case we also use a defined component type `image`
+        content: { type: 'image' },
+        // This triggers `active` event on dropped components and the `image`
+        // reacts by opening the AssetManager
+        activate: true,
+      }
+    ]
+  },
+
+
+  layerManager: {
+    appendTo: '.layers-container'
+  },
+  // We define a default panel as a sidebar to contain layers
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+//for the panel which shows the code .
+editor.Panels.addPanel({
+  id: 'panel-top',
+  el: '.panel__top',
+});
+editor.Panels.addPanel({
+  id: 'basic-actions',
+  el: '.panel__basic-actions',
+  buttons: [
+    {
+      id: 'visibility',
+      active: true, // active by default
+      className: 'btn-toggle-borders',
+      label: '<u>B</u>',
+      command: 'sw-visibility', // Built-in command
+    }, {
+      id: 'export',
+      className: 'btn-open-export',
+      label: 'Exp',
+      command: 'export-template',
+      context: 'export-template', // For grouping context of buttons from the same panel
+    }, {
+      id: 'show-json',
+      className: 'btn-show-json',
+      label: 'JSON',
+      context: 'show-json',
+      command(editor) {
+        editor.Modal.setTitle('Components JSON')
+          .setContent(`<textarea style="width:100%; height: 250px;">
+            ${JSON.stringify(editor.getComponents())}
+          </textarea>`)
+          .open();
+      },
+    }
+  ],
+});
+
+
+//
+editor.on('run:export-template:before', opts => {
+  console.log('Before the command run');
+  if (0 /* some condition */) {
+    opts.abort = 1;
+  }
+});
+editor.on('run:export-template', () => console.log('After the command run'));
+editor.on('abort:export-template', () => console.log('Command aborted'));
+
+
+editor.DomComponents.addType('input', {
+    isComponent: el => el.tagName == 'INPUT',
+    model: {
+      defaults: {
+        traits: [
+          // Strings are automatically converted to text types
+          'name', // Same as: { type: 'text', name: 'name' }
+          'placeholder',
+          {
+            type: 'select', // Type of the trait
+            label: 'Type', // The label you will see in Settings
+            name: 'type', // The name of the attribute/property to use on component
+            options: [
+              { id: 'text', name: 'Text'},
+              { id: 'email', name: 'Email'},
+              { id: 'password', name: 'Password'},
+              { id: 'number', name: 'Number'},
+            ]
+          }, {
+            type: 'checkbox',
+            name: 'required',
+        }],
+        // As by default, traits are binded to attributes, so to define
+        // their initial value we can use attributes
+        attributes: { type: 'text', required: true },
+      },
+    },
+});
+
+editor.Commands.add('set-device-desktop', {
+  run: editor => editor.setDevice('Desktop')
+});
+editor.Commands.add('set-device-mobile', {
+  run: editor => editor.setDevice('Mobile')
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+</html>
